@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from devsim import set_parameter, solve
+from devsim import set_parameter, solve, write_devices
 
 from devsim.python_packages.simple_physics import GetContactBiasName, PrintCurrents
 import diode_common
@@ -66,3 +66,8 @@ for i in data["iterations"]:
         for r in d["regions"]:
             for e in r["equations"]:
                 print(e)
+
+####
+#### Export plots
+####
+write_devices(file="diode_2d.dat", type="vtk")
