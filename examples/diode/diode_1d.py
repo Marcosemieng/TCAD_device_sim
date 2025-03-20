@@ -2,7 +2,18 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from devsim import print_node_values, set_parameter, solve, write_devices
+import numpy as np
+
+from devsim import (
+    print_node_values, 
+    set_parameter, 
+    solve, 
+    write_devices, 
+    get_node_model_values, 
+    set_parameter, 
+    edge_average_model, 
+    get_edge_model_values
+)
 
 import devsim.python_packages.simple_physics as simple_physics
 import diode_common
@@ -44,14 +55,50 @@ solve(type="dc", absolute_error=1e10, relative_error=1e-10, maximum_iterations=3
 #### Ramp the bias to 0.5 Volts
 ####
 v = 0.0
-while v < 0.51:
+v_max = 0.5 # MM
+v_step = 0.01 # MM
+# creating array for data conversion to numpy array (MM)
+arr_v = np.zeros([int(v_max/v_step + 1)]) # MM
+arr_i_top = np.zeros([int(v_max/v_step + 1)]) # MM
+arr_i_bot = np.zeros([int(v_max/v_step + 1)]) # MM
+i = 0  # MM
+while v < v_max + 0.01:
     set_parameter(device=device, name=simple_physics.GetContactBiasName("top"), value=v)
     solve(type="dc", absolute_error=1e10, relative_error=1e-10, maximum_iterations=30)
-    simple_physics.PrintCurrents(device, "top")
-    simple_physics.PrintCurrents(device, "bot")
-    v += 0.1
+    # simple_physics.PrintCurrents(device, "top")
+    # simple_physics.PrintCurrents(device, "bot")
+    top_iv = simple_physics.PrintCurrents(device, "top") # MM
+    bot_iv = simple_physics.PrintCurrents(device, "bot") # MM
+    print(top_iv, bot_iv)  # MM
+    arr_v[i] = v # MM
+    arr_i_top[i] = top_iv[1] # MM
+    arr_i_bot[i] = bot_iv[1] # MM
+    v += v_step
+    i += 1  # MM
+print(arr_v,arr_i_top,arr_i_bot) # MM
 
 write_devices(file="diode_1d.dat", type="tecplot")
+
+####
+#### Plot solution of densities
+####
+import matplotlib
+import matplotlib.pyplot
+x=get_node_model_values(device=device, region=region, name="x")
+ymax = 10
+ymin = 10
+fields = ("Electrons", "Holes", "Donors", "Acceptors")
+for i in fields:
+   y=get_node_model_values(device=device, region=region, name=i)
+   if (max(y) > ymax):
+     ymax = max(y)
+   matplotlib.pyplot.semilogy(x, y)
+matplotlib.pyplot.xlabel('x (cm)')
+matplotlib.pyplot.ylabel('Density (#/cm^3)')
+matplotlib.pyplot.legend(fields)
+ymax *= 10
+matplotlib.pyplot.axis([min(x), max(x), ymin, ymax])
+matplotlib.pyplot.savefig("diode_1d_density.png")
 
 # import matplotlib
 # import matplotlib.pyplot
