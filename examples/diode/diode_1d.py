@@ -100,42 +100,61 @@ ymax *= 10
 matplotlib.pyplot.axis([min(x), max(x), ymin, ymax])
 matplotlib.pyplot.savefig("diode_1d_density.png")
 
-# import matplotlib
-# import matplotlib.pyplot
-# x=get_node_model_values(device=device, region=region, name="x")
+#### MM
+#### Plot solution of Potential (MM)
+####
+matplotlib.pyplot.clf()
+import matplotlib
+import matplotlib.pyplot
+x=get_node_model_values(device=device, region=region, name="x")
 # ymax = 10
 # ymin = 10
-# fields = ("Electrons", "Holes", "Donors", "Acceptors")
-# for i in fields:
-#    y=get_node_model_values(device=device, region=region, name=i)
-#    if (max(y) > ymax):
-#      ymax = max(y)
-#    matplotlib.pyplot.semilogy(x, y)
-# matplotlib.pyplot.xlabel('x (cm)')
-# matplotlib.pyplot.ylabel('Density (#/cm^3)')
-# matplotlib.pyplot.legend(fields)
-# ymax *= 10
-# matplotlib.pyplot.axis([min(x), max(x), ymin, ymax])
-# matplotlib.pyplot.savefig("diode_1d_density.eps")
-#
-# matplotlib.pyplot.clf()
-# edge_average_model(device=device, region=region, node_model="x", edge_model="xmid")
-# xmid=get_edge_model_values(device=device, region=region, name="xmid")
-# efields = ("ElectronCurrent", "HoleCurrent", )
-# y=get_edge_model_values(device=device, region=region, name="ElectronCurrent")
-# ymin=min(y)
-# ymax=max(y)
-# for i in efields:
-#  y=get_edge_model_values(device=device, region=region, name=i)
-#  if min(y) < ymin:
-#    ymin = min(y)
-#  elif max(y) > ymax:
-#    ymax = max(y)
-#  matplotlib.pyplot.plot(xmid, y)
-# matplotlib.pyplot.xlabel('x (cm)')
-# matplotlib.pyplot.ylabel('J (A/cm^2)')
-# matplotlib.pyplot.legend(efields)
-# matplotlib.pyplot.axis([min(x), max(x), 0.5*ymin, 2*ymax])
-# matplotlib.pyplot.savefig("diode_1d_current.eps")
-# print ymin
-# print ymax
+pfields = ("Potential")
+for i in pfields:
+   y=get_node_model_values(device=device, region=region, name="Potential")
+   if (max(y) > ymax):
+     ymax = max(y)
+   #matplotlib.pyplot.semilogy(x, y)
+matplotlib.pyplot.xlabel('x (cm)')
+matplotlib.pyplot.ylabel('Potential (?)')
+matplotlib.pyplot.legend(pfields)
+ymax *= 10
+matplotlib.pyplot.axis([min(x), max(x), ymin, ymax])
+matplotlib.pyplot.savefig("diode_1d_potential.png")
+print("Potential values are:", y)
+
+####
+#### Plot solution of current densities
+####
+matplotlib.pyplot.clf()
+edge_average_model(device=device, region=region, node_model="x", edge_model="xmid")
+xmid=get_edge_model_values(device=device, region=region, name="xmid")
+efields = ("ElectronCurrent", "HoleCurrent", )
+y=get_edge_model_values(device=device, region=region, name="ElectronCurrent")
+ymin=min(y)
+ymax=max(y)
+for i in efields:
+ y=get_edge_model_values(device=device, region=region, name=i)
+ if min(y) < ymin:
+   ymin = min(y)
+ elif max(y) > ymax:
+   ymax = max(y)
+ matplotlib.pyplot.plot(xmid, y)
+matplotlib.pyplot.xlabel('x (cm)')
+matplotlib.pyplot.ylabel('J (A/cm^2)')
+matplotlib.pyplot.legend(efields)
+matplotlib.pyplot.axis([min(x), max(x), 0.5*ymin, 2*ymax])
+matplotlib.pyplot.savefig("diode_1d_current.png")
+print(ymin)
+print(ymax)
+
+####
+#### Plot IV curve
+####
+matplotlib.pyplot.clf() # MM
+ivfields = ("IV_top",) # MM
+matplotlib.pyplot.plot(arr_v,arr_i_top) # MM
+matplotlib.pyplot.xlabel('V') # MM
+matplotlib.pyplot.ylabel('J (A/cm^2)') # MM
+matplotlib.pyplot.legend(ivfields) # MM
+matplotlib.pyplot.savefig("diode_1d_IV.png") # MM
