@@ -68,7 +68,15 @@ y_bulk_mid = 0.5 * (y_bulk_top + y_bulk_bottom)
 y_device_bottom = y_bulk_bottom + air_thickness
 y_diffusion = y_bulk_top + diffusion_thickness
 
-create_gmsh_mesh(file="gmsh_mos2d.msh", mesh="mos2d")
+import os
+# Look for your absolute directory path
+absolute_path = os.path.dirname(os.path.abspath(__file__))
+print("absolute path is:", absolute_path)
+# Or: file_path = os.path.join(absolute_path, 'folder', 'my_file.py')
+file_path = absolute_path + "/gmsh_mos2d.msh"
+print("relative path is:", file_path)
+
+create_gmsh_mesh(file=file_path, mesh="mos2d")
 add_gmsh_region(mesh="mos2d", gmsh_name="bulk", region="bulk", material="Silicon")
 add_gmsh_region(mesh="mos2d", gmsh_name="oxide", region="oxide", material="Silicon")
 add_gmsh_region(mesh="mos2d", gmsh_name="gate", region="gate", material="Silicon")
