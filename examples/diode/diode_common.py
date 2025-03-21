@@ -101,6 +101,8 @@ def Create2DMesh(device, region):
         name="bot",
         material="metal",
         region=region,
+        yl=0,
+        yh=0.2e-5,
         xl=1e-5,
         xh=1e-5,
         bloat=1e-10,
