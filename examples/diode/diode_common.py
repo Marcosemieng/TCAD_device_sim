@@ -133,8 +133,14 @@ def Create2DGmshMesh(device, region):
 
 
 def Create3DGmshMesh(device, region):
+    # fix for broken directory
+    import os
+    # Look for your absolute directory path
+    absolute_path = os.path.dirname(os.path.abspath(__file__))
+    # Or: file_path = os.path.join(absolute_path, 'folder', 'my_file.py')
+    file_path = absolute_path + "/gmsh_diode3d.msh"
     # this reads in the gmsh format
-    create_gmsh_mesh(mesh="diode3d", file="gmsh_diode3d.msh")
+    create_gmsh_mesh(mesh="diode3d", file=file_path)
     add_gmsh_region(mesh="diode3d", gmsh_name="Bulk", region=region, material="Silicon")
     add_gmsh_contact(
         mesh="diode3d", gmsh_name="Base", region=region, material="metal", name="top"

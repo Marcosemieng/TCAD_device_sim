@@ -62,8 +62,14 @@ element_from_edge_model(edge_model="ElectricField", device=device, region=region
 element_from_edge_model(edge_model="ElectronCurrent", device=device, region=region)
 element_from_edge_model(edge_model="HoleCurrent", device=device, region=region)
 
+####
+#### Export plots
+####
 write_devices(file="gmsh_diode3d_dd.dat", type="tecplot")
 write_devices(file="gmsh_diode3d_dd.msh", type="devsim")
+# write_devices(file="gmsh_diode3d.dat", type="vtk") # Paraview compatible
+write_devices(file="gmsh_diode3d_dd.dat", type="vtk") # Paraview compatible
+# write_devices(file="gmsh_dioded_out.dat", type="vtk") # Paraview compatible
 
 # element_from_node_model(node_model="node_index", device=device, region=region)
 # en0 = map(lambda x : int(x), get_element_model_values(name="node_index@en0", device=device, region=region))
