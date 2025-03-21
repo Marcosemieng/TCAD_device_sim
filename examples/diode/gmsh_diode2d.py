@@ -51,5 +51,11 @@ while v < 0.51:
     PrintCurrents(device, "bot")
     v += 0.1
 
+####
+#### Export plots
+####
 write_devices(file="gmsh_diode2d.dat", type="tecplot")
 write_devices(file="gmsh_diode2d_dd.msh", type="devsim")
+write_devices(file="gmsh_diode2d.dat", type="vtk") # Paraview compatible
+write_devices(file="gmsh_diode2d_dd.dat", type="vtk") # Paraview compatible
+write_devices(file="gmsh_diode2d_out.dat", type="vtk") # Paraview compatible
