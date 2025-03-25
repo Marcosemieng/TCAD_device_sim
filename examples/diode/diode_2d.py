@@ -28,13 +28,16 @@ diode_common.SetNetDoping(device=device, region=region)
 
 diode_common.InitialSolution(device, region)
 
-# Initial DC solution
+####
+#### Initial DC solution
+####
 solve(type="dc", absolute_error=1.0, relative_error=1e-12, maximum_iterations=30)
 
-diode_common.DriftDiffusionInitialSolution(device, region)
 ###
 ### Drift diffusion simulation at equilibrium
 ###
+diode_common.DriftDiffusionInitialSolution(device, region)
+
 solve(type="dc", absolute_error=1e10, relative_error=1e-10, maximum_iterations=30)
 
 ####
@@ -63,26 +66,26 @@ while v < v_max + 0.01:
     i += 1  # MM
 print(arr_v,arr_i_top,arr_i_bot) # MM
 
-val = 10
-for i in range(2):
-    set_parameter(device=device, name=GetContactBiasName("top"), value=val)
-    data = solve(
-        type="dc",
-        absolute_error=1e10,
-        relative_error=1e-10,
-        maximum_iterations=30,
-        info=True,
-    )
-    print(data["converged"])
-    if not data["converged"]:
-        val = 0.6
+# val = 10
+# for i in range(2):
+#     set_parameter(device=device, name=GetContactBiasName("top"), value=val)
+#     data = solve(
+#         type="dc",
+#         absolute_error=1e10,
+#         relative_error=1e-10,
+#         maximum_iterations=30,
+#         info=True,
+#     )
+#     print(data["converged"])
+#     if not data["converged"]:
+#         val = 0.6
 
-print(data)
-for i in data["iterations"]:
-    for d in i["devices"]:
-        for r in d["regions"]:
-            for e in r["equations"]:
-                print(e)
+# print(data)
+# for i in data["iterations"]:
+#     for d in i["devices"]:
+#         for r in d["regions"]:
+#             for e in r["equations"]:
+#                 print(e)
 
 ####
 #### Export plots
@@ -92,12 +95,12 @@ write_devices(file="diode_2d.dat", type="vtk")
 ####
 #### Plot IV curve
 ####
-import matplotlib
-import matplotlib.pyplot
-matplotlib.pyplot.clf() # MM
-ivfields = ("IV_top",) # MM
-matplotlib.pyplot.plot(arr_v,arr_i_top) # MM
-matplotlib.pyplot.xlabel('V') # MM
-matplotlib.pyplot.ylabel('J (A/cm^2)') # MM
-matplotlib.pyplot.legend(ivfields) # MM
-matplotlib.pyplot.savefig("diode_2d_IV.png") # MM
+# import matplotlib
+# import matplotlib.pyplot
+# matplotlib.pyplot.clf() # MM
+# ivfields = ("IV_top",) # MM
+# matplotlib.pyplot.plot(arr_v,arr_i_top) # MM
+# matplotlib.pyplot.xlabel('V') # MM
+# matplotlib.pyplot.ylabel('J (A/cm^2)') # MM
+# matplotlib.pyplot.legend(ivfields) # MM
+# matplotlib.pyplot.savefig("diode_2d_IV.png") # MM
