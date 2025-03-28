@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import numpy as np
+
 from devsim import (
     element_from_edge_model,
     node_model,
@@ -27,16 +29,11 @@ diode_common.SetParameters(device=device, region=region)
 ####
 #### NetDoping
 ####
-node_model(
-    device=device, region=region, name="Acceptors", equation="1.0e18*step(0.5e-5-z);"
-)
-node_model(
-    device=device, region=region, name="Donors", equation="1.0e18*step(z-0.5e-5);"
-)
+node_model(device=device, region=region, name="Acceptors", equation="1.0e18*step(0.5e-5-z);")
+node_model(device=device, region=region, name="Donors", equation="1.0e18*step(z-0.5e-5);")
 node_model(device=device, region=region, name="NetDoping", equation="Donors-Acceptors;")
 
 diode_common.InitialSolution(device, region)
-
 
 ####
 #### Initial DC solution

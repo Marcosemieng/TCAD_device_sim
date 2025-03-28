@@ -15,15 +15,15 @@ from devsim import (
 
 device = "mos2d"
 
-device_width = 1.0e-4
-gate_width = 1.0e-5
-diffusion_width = 0.4
+device_width = 1.0e-4 #1um (MM)
+gate_width = 1.0e-5 #100nm (MM)
+diffusion_width = 0.4 #4mm (MM)
 
 air_thickness = 1e-7
-oxide_thickness = 1e-5
-gate_thickness = 1e-5
-device_thickness = 1e-4
-diffusion_thickness = 1e-5
+oxide_thickness = 1e-5 #100nm (MM)
+gate_thickness = 1e-5 #100nm (MM)
+device_thickness = 1e-4 #1um (MM)
+diffusion_thickness = 1e-5 #100nm (MM)
 
 x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
