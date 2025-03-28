@@ -90,8 +90,8 @@ for r in silicon_regions:
     element_from_edge_model(edge_model="ElectronCurrent", device=device, region=r)
     element_from_edge_model(edge_model="HoleCurrent", device=device, region=r)
 #
-rampbias(device, "gate", 0.5, 0.5, 0.001, 100, 1e-10, 1e30, printAllCurrents)
-rampbias(device, "drain", 0.5, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
+# rampbias(device, "gate", 0.5, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
+rampbias(device, "drain", 2.0, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 ####
 #### Export plots
