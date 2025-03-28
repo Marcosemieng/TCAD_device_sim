@@ -98,4 +98,6 @@ def printAllCurrents(device):
     Prints all contact currents on device
     """
     for c in ds.get_contact_list(device=device):
-        PrintCurrents(device, c)
+        # PrintCurrents(device, c)
+        print("This is a test print:")  # MM
+        # test_iv = PrintCurrents(device, c) # MM
