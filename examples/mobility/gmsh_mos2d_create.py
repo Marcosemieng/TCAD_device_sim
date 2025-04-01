@@ -20,7 +20,7 @@ gate_width = 1.0e-5 #100nm (MM)
 diffusion_width = 0.4 #4mm (MM)
 
 air_thickness = 1e-7
-oxide_thickness = 1e-5 #100nm (MM)
+oxide_thickness = 2e-7 # 1e-5 = 100nm (MM)
 gate_thickness = 1e-5 #100nm (MM)
 device_thickness = 1e-4 #1um (MM)
 diffusion_thickness = 1e-5 #100nm (MM)
@@ -29,8 +29,8 @@ x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
 
 # p doping
-bulk_doping = 1e15
-body_doping = 1e19
+bulk_doping = 1e17 # 1e15 (MM)
+body_doping = 1e15 # 1e19 (MM)
 # n doping
 drain_doping = 1e19
 source_doping = 1e19
