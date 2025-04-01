@@ -89,9 +89,18 @@ for r in silicon_regions:
     element_from_edge_model(edge_model="ElectricField", device=device, region=r)
     element_from_edge_model(edge_model="ElectronCurrent", device=device, region=r)
     element_from_edge_model(edge_model="HoleCurrent", device=device, region=r)
-#
-# rampbias(device, "gate", 0.5, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
-rampbias(device, "drain", 2.0, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
+
+# Loop Gate(MM)
+# set_parameter(device=device, name=GetContactBiasName('drain'), value=0.01) # set drain bias (MM)
+# set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
+# set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
+# rampbias(device, "gate", 1.5, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
+
+# Loop Drain
+set_parameter(device=device, name=GetContactBiasName('gate'), value=1) # set drain bias (MM)
+set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
+set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
+rampbias(device, "drain", 2.0, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 ####
 #### Export plots
