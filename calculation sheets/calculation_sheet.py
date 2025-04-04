@@ -1,3 +1,4 @@
+# This '.py' file is used to calculate the parameters of a MOSFET device by rule of thumb based on academic formulas.
 import numpy as np
 
 # Input parameters
@@ -37,4 +38,4 @@ print("Co = ", Co)
 print("Vbi = ", Vbi)
 print("Wm = ", Wm) # cm
 print("Wj = ", Wj) # cm
-print("Vth = ", Vth)
+print("Vth = ", Vth) 
