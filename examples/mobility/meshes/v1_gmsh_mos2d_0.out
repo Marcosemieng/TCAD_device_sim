@@ -1,0 +1,34 @@
++ /Applications/Gmsh.app/Contents/MacOS/gmsh -2 -format msh2 /Users/macbookpro/Documents/Visual_Studio_Projects/devsim_misc/refinement/gmsh_mos2d.geo -o gmsh_mos2d.msh
+Info    : Running '/Applications/Gmsh.app/Contents/MacOS/gmsh -2 -format msh2 /Users/macbookpro/Documents/Visual_Studio_Projects/devsim_misc/refinement/gmsh_mos2d.geo -o gmsh_mos2d.msh' [Gmsh 4.13.1, 1 node, max. 1 thread]
+Info    : Started on Tue Apr  1 19:32:44 2025
+Info    : Reading '/Users/macbookpro/Documents/Visual_Studio_Projects/devsim_misc/refinement/gmsh_mos2d.geo'...
+Warning : Start point 12 and end point 12 of GEO line 10 are closer than the geometrical tolerance, at position (4.5e-05, -1e-05, 0)
+Info    : Done reading '/Users/macbookpro/Documents/Visual_Studio_Projects/devsim_misc/refinement/gmsh_mos2d.geo'
+Info    : Meshing 1D...
+Info    : [  0%] Meshing curve 1 (Line)
+Info    : [ 10%] Meshing curve 2 (Line)
+Info    : [ 20%] Meshing curve 3 (Line)
+Info    : [ 30%] Meshing curve 4 (Line)
+Info    : [ 40%] Meshing curve 5 (Line)
+Info    : [ 40%] Meshing curve 6 (Line)
+Info    : [ 50%] Meshing curve 9 (Line)
+Info    : [ 60%] Meshing curve 10 (Line)
+Info    : [ 70%] Meshing curve 11 (Line)
+Info    : [ 70%] Meshing curve 12 (Line)
+Info    : [ 80%] Meshing curve 13 (Line)
+Info    : [ 90%] Meshing curve 14 (Line)
+Info    : [100%] Meshing curve 15 (Line)
+Info    : Done meshing 1D (Wall 0.0146224s, CPU 0.009387s)
+Info    : Meshing 2D...
+Info    : [  0%] Meshing surface 8 (Plane, Delaunay)
+Info    : [ 40%] Meshing surface 17 (Plane, Delaunay)
+Info    : [ 70%] Meshing surface 19 (Plane, Delaunay)
+Info    : Done meshing 2D (Wall 0.0769849s, CPU 0.06886s)
+Info    : 2168 nodes 4448 elements
+Info    : Writing 'gmsh_mos2d.msh'...
+Info    : Done writing 'gmsh_mos2d.msh'
+Info    : Stopped on Tue Apr  1 19:32:44 2025 (From start: Wall 0.117004s, CPU 0.227397s)
+
+real	0m0.276s
+user	0m0.230s
+sys	0m0.015s
