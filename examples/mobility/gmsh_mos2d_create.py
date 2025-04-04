@@ -15,28 +15,28 @@ from devsim import (
 
 device = "mos2d"
 
-device_width = 1.0e-4 #1um (MM)
-gate_width = 1.0e-5 #100nm (MM)
-diffusion_width = 0.4 #4mm (MM)
+device_width = 60e-6 #1um (MM)
+gate_width = 45e-7 #100nm (MM)
+diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
-oxide_thickness = 2e-7 # 1e-5 = 100nm (MM)
+oxide_thickness = 5e-7 # 1e-5 = 100nm (MM)
 gate_thickness = 1e-5 #100nm (MM)
-device_thickness = 1e-4 #1um (MM)
-diffusion_thickness = 1e-5 #100nm (MM)
+device_thickness = 7e-5 #1um (MM)
+diffusion_thickness = 1e-6 #100nm (MM)
 
 x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
 
 # p doping
-bulk_doping = 1e17 # 1e15 (MM)
+bulk_doping = 1e18 # 1e15 (MM)
 body_doping = 1e15 # 1e19 (MM)
 # n doping
-drain_doping = 1e19
-source_doping = 1e19
+drain_doping = 1e20
+source_doping = 1e20
 gate_doping = 1e20
 
-y_channel_spacing = 1e-8
+y_channel_spacing = 1e-7 # 1e-8 ??? (MM)
 y_diffusion_spacing = 1e-6
 y_gate_top_spacing = 1e-8
 y_gate_mid_spacing = gate_thickness * 0.25
