@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 
+
 # Function to extract Ion (Vg=Vd) from Id@Vg at Vds=Vdd=1V
 def mosfet_ion_char(file_path):
     Vds_bias = 1  # Vds=1V bias value to filter the data: data must be extracted at this Vds=Vdd=1V
@@ -124,6 +125,9 @@ def mosfet_Vth_char(file_path):
     return gm_peak, voltage_at_gm_peak, v_intersect, v_th
 
 
+# Function to extract the Subthreshold swing (SS) from Id@Vg at Vds=Vdd=1V
+# This function uses the Vth value calculated by mosfet_Vth_char
+# and the slope at Vth to calculate the subthreshold swing.
 def mosfet_SS_char(file_path):
     # Call mosfet_Vth_char to get v_th
     _, _, _, v_th = mosfet_Vth_char(file_path)
@@ -180,6 +184,64 @@ def mosfet_SS_char(file_path):
     return slope_at_v_th, ss
 
 
+# Function to extract the Field Effect Mobility from Id@Vg
+# This function is a placeholder and needs to be implemented based on the specific mobility calculation method.
+# uFE = (Lch * gm) / (Wch * Cins * Vds); Cins = gate insulator capacitance; Vds = ?; Wch = ?.
+def mosfet_mobility_fe_char(file_path, Lch=None, Wch=None, Cins=None):
+    # calculate gm_peak
+    gm_peak, _, _, _ = mosfet_Vth_char(file_path)
+
+    # TO-DO: these numbers below should be given externally rigorously
+    eps_0 = 8.85e-14  # F/cm^2
+    eps_ox = 3.9 # 25 HfO
+    εox = eps_ox * eps_0
+    d = 10 * 1e-7  # cm
+    Cins = εox / d
+    Lch = 45e-7  # cm
+    Wch = 1e-7  # cm (for now just approximated as in reality the width is virtually 0)
+    Vds_bias = 1  # Vds=1V bias
+
+    # Calculate the field effect mobility
+    # TO-DO: Check if the units are consistent
+    uFE = (Lch * gm_peak) / (Wch * Cins * Vds_bias)
+
+    return uFE
+
+
+# Function to extract the DIBL (Drain Induced Barrier Lowering) from Id@Vg
+# This function is a placeholder and needs to be implemented based on the specific DIBL calculation method.
+# It needs to run across two sets of Vds: = 1V and = 0.1V, extract Vth for both
+# DIBL = Vth(Vds=1V) - Vth(Vds=0.1V)/(Vds=1V - Vds=0.1V)
+def mosfet_DIBL_char(file_path):
+    dibl = None
+
+    return dibl
+
+
+# Function to extract Rtot, Rc, Rch, Rsh
+# This function is a placeholder and needs to be implemented based on the specific resistance calculation method.
+# Rtot at 4 different channel lengths, Rc extracted as the intercept on the y-axis
+# Rch = Rtot - 2Rc; Rsh = Rch / Lch
+# Use small Vds (0.1V?)
+def mosfet_resistance_char(file_path):
+    Rtot = None
+    Rc = None
+    Rch = None
+    Rsh = None
+
+    return Rtot, Rc, Rch, Rsh
+
+
+# Function to extract the Channel Mobility from Id@Vg
+# This function is a placeholder and needs to be implemented based on the specific mobility calculation method.
+# ucon = 1/(q * ns * Rsh); ns = (Cin * Vov) / q (near the source; Rsh = sheet resistance extracted through TLM
+# Rsh is extracted from the TLM
+def mosfet_mobility_con_char(file_path):
+    dibl = None
+
+    return dibl
+
+
 
 # Test the functions
 file_path = '/Users/macbookpro/Desktop/id_vds.csv'  # Replace with the path to your CSV file
@@ -188,6 +250,7 @@ i_off = mosfet_ioff_char(file_path)
 on_off_ratio = mosfet_on_off_ratio_char(file_path)
 gm_peak, voltage_at_gm_peak, v_intersect, v_th = mosfet_Vth_char(file_path)
 slope_at_v_th, ss = mosfet_SS_char(file_path)
+uFE = mosfet_mobility_fe_char(file_path)
 
 if i_off:
     current_at_0 = i_off
@@ -208,3 +271,6 @@ if gm_peak:
 
 if slope_at_v_th is not None:
     print(f"SS is: {ss}")
+
+if uFE:
+    print(f"uFE is: {uFE}")
