@@ -1,5 +1,14 @@
 # This '.py' file is used to calculate the parameters of a MOSFET device by rule of thumb based on academic formulas.
+
 import numpy as np
+
+# Import 'sys' and 'os' in order to use modules from other parallel packages
+# import sys
+# import os
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# import device_characterisation.mosfet_char as mosfet_char
+
 
 # Input parameters
 q = 1.6e-19  # coul
@@ -38,4 +47,7 @@ print("Co = ", Co)
 print("Vbi = ", Vbi)
 print("Wm = ", Wm) # cm
 print("Wj = ", Wj) # cm
-print("Vth = ", Vth) 
+print("Vth = ", Vth)
+
+mosfet_ion = mosfet_char.mosfet_ion_char('/Users/macbookpro/Desktop/id_vds.csv')
+print("Ion = ", mosfet_ion)
