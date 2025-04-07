@@ -37,7 +37,7 @@ def print_IVds():
     # Customize the plot
     plt.xlabel('Vds (Drain Voltage) [V]')  # X-axis label
     plt.ylabel('Ids (Drain Current) [A/cm]')  # Y-axis label
-    plt.yscale('log')  # Set the y-axis to logarithmic scale
+    # plt.yscale('log')  # Set the y-axis to logarithmic scale
     plt.title('Ids vs Vds for Different Vgs')  # Plot title
     plt.legend()  # Add a legend
     plt.grid(True)  # Add a grid
@@ -85,5 +85,5 @@ def print_IVgs():
 
 
 # Test
-print_IVgs = print_IVgs()
-# print_IVds = print_IVs()
+# print_IVgs = print_IVgs()
+print_IVds = print_IVds()
