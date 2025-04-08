@@ -85,5 +85,5 @@ def print_IVgs():
 
 
 # Test
-# print_IVgs = print_IVgs()
+print_IVgs = print_IVgs()
 print_IVds = print_IVds()
