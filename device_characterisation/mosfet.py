@@ -237,6 +237,8 @@ def DIBL(file_path):
 # Function to extract Rtot, Rc, Rch, Rsh
 # This function is a placeholder and needs to be implemented based on the specific resistance calculation method.
 # Rtot at 4 different channel lengths, Rc extracted as the intercept on the y-axis
+# Methodology #1): Rtot is extracted at Vds=0.1V
+# Methodology #2): Id@Vds in linear region, at low drain voltage as a function of the gate drive
 # Rch = Rtot - 2Rc; Rsh = Rch / Lch
 # Use small Vds (0.1V?)
 def resistance(file_path):
