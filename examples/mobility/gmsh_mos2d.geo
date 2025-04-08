@@ -1,12 +1,17 @@
-device_width =     1.0e-4;
-gate_width =       1.0e-5;
-diffusion_width =  0.4;
+//// Mesh MOSFET 2D: v9
+//// 1) oxide thickness = 5 nm; 2) diffusion thickness = 10 nm
+//// 3) device width = 600 nm; 4) channel length = 45 nm
+//// 5) Bulk thickness = 0.7 um; 
+
+device_width =     60e-6;
+gate_width =       45e-7;
+diffusion_width =  0.4; // this parameter might be unused
 
 air_thickness =        1e-7;
-oxide_thickness =      1e-5;
+oxide_thickness =      5e-7;
 gate_thickness =       1e-5;
-device_thickness =     1e-4;
-diffusion_thickness =  1e-5;
+device_thickness =     7e-5;
+diffusion_thickness =  1e-6;
 
 y_channel_spacing =      1e-7;
 y_diffusion_spacing =    1e-6;
@@ -146,7 +151,12 @@ Background Field = 7;
 
 
 // Don't extend the elements sizes from the boundary inside the domain
-//Mesh.CharacteristicLengthExtendFromBoundary = 0;
+Mesh.CharacteristicLengthExtendFromBoundary = 0;
+Mesh.Algorithm=5; /*Delaunay*/
+//Mesh.RandomFactor=1e-5; /*perturbation*/
+Mesh.CharacteristicLengthFromPoints = 0;
+Mesh.CharacteristicLengthFromCurvature = 0;
+Mesh.CharacteristicLengthExtendFromBoundary = 0;
 
 Physical Line("gate_contact") = {13};
 Physical Line("gate_oxide_interface") = {11};
