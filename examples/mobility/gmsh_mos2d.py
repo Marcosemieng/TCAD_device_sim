@@ -110,7 +110,7 @@ for voltage in Drain_voltages:
     rampbias(device, "gate", 1.5, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 # Characterisation of the MOSFET (MM)
-# Characterisation = mosfet_char.compute() # Compute and save in a '.csv' file
+Characterisation = mosfet_char.compute() # Compute and save in a '.csv' file
 
 
 ####
