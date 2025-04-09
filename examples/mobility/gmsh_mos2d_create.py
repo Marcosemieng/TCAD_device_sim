@@ -15,13 +15,18 @@ from devsim import (
 
 device = "mos2d"
 
-device_width = 60e-6 #1um (MM)
-gate_width = 45e-7 #100nm (MM)
+contact_width    = 500e-7
+channel_length   = 500e-7 # MM: decoupling back gate from channel length
+device_width     = 2*contact_width + channel_length
+gate_width       = device_width #
+device_thickness = 200e-7
+
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
 oxide_thickness = 5e-7 # 1e-5 = 100nm (MM)
 gate_thickness = 1e-5 #100nm (MM)
+
 device_thickness = 7e-5 #1um (MM)
 diffusion_thickness = 1e-6 #100nm (MM)
 
@@ -29,11 +34,11 @@ x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
 
 # p doping
-bulk_doping = 1e18 # 1e15 (MM)
-body_doping = 1e15 # 1e19 (MM)
+bulk_doping = 0 # 1e18 # 1e15 (MM)
+body_doping = bulk_doping #1e15 # 1e19 (MM)
 # n doping
-drain_doping = 1e20
-source_doping = 1e20
+drain_doping = 0 # 1e20
+source_doping = 0 # 1e20
 gate_doping = 1e20
 
 y_channel_spacing = 1e-7 # 1e-8 ??? (MM)
@@ -54,6 +59,8 @@ x_bulk_right = x_bulk_left + device_width
 x_center = 0.5 * (x_bulk_left + x_bulk_right)
 x_gate_left = x_center - 0.5 * (gate_width)
 x_gate_right = x_center + 0.5 * (gate_width)
+x_channel_left =    x_center - 0.5 * (channel_length); # MM: decoupling back gate from channel length
+x_channel_right =   x_center + 0.5 * (channel_length); # MM: decoupling back gate from channel length
 x_device_left = x_bulk_left - air_thickness
 x_device_right = x_bulk_right + air_thickness
 
@@ -66,7 +73,10 @@ y_device_top = y_gate_top - air_thickness
 y_bulk_bottom = y_bulk_top + device_thickness
 y_bulk_mid = 0.5 * (y_bulk_top + y_bulk_bottom)
 y_device_bottom = y_bulk_bottom + air_thickness
-y_diffusion = y_bulk_top + diffusion_thickness
+
+# S/D doping diffusion on the upper side
+y_diffusion     =y_bulk_bottom - diffusion_thickness
+# y_diffusion     =y_bulk_top + diffusion_thickness
 
 import os
 # Look for your absolute directory path
@@ -94,9 +104,9 @@ add_gmsh_contact(
     name="source",
     material="metal",
 )
-add_gmsh_contact(
-    mesh="mos2d", gmsh_name="body_contact", region="bulk", name="body", material="metal"
-)
+# add_gmsh_contact(
+#     mesh="mos2d", gmsh_name="body_contact", region="bulk", name="body", material="metal"
+# )
 add_gmsh_contact(
     mesh="mos2d", gmsh_name="gate_contact", region="gate", name="gate", material="metal"
 )
@@ -126,9 +136,12 @@ mydict["source_doping"] = source_doping
 mydict["bulk_doping"] = bulk_doping
 mydict["x_gate_left"] = x_gate_left
 mydict["x_gate_right"] = x_gate_right
+mydict["x_channel_left"] = x_channel_left
+mydict["x_channel_right"] = x_channel_right
 mydict["x_diffusion_decay"] = x_diffusion_decay
 mydict["y_diffusion"] = y_diffusion
 mydict["y_bulk_bottom"] = y_bulk_bottom
+mydict["y_bulk_top"] = y_bulk_top
 mydict["y_diffusion_decay"] = y_diffusion_decay
 
 node_model(
@@ -142,27 +155,39 @@ node_model(
     name="NetDoping", device=device, region="gate", equation="Donors - Acceptors"
 )
 
-node_model(
-    name="DrainDoping",
-    device=device,
-    region="bulk",
-    equation="0.25*%(drain_doping)1.15e*erfc((x-%(x_gate_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
-)
-node_model(
-    name="SourceDoping",
-    device=device,
-    region="bulk",
-    equation="0.25*%(source_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
-)
-node_model(
-    name="BodyDoping",
-    device=device,
-    region="bulk",
-    equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
-)
+# S/D doping on the upper side a per new position of S/D contacts
+node_model(name="DrainDoping",  device=device, region="bulk", equation="0.25*%(drain_doping)1.15e*erfc((x-%(x_channel_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)" % mydict)
+
+# node_model(
+#     name="DrainDoping",
+#     device=device,
+#     region="bulk",
+#     equation="0.25*%(drain_doping)1.15e*erfc((x-%(x_gate_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
+#     % mydict,
+# )
+
+# S/D doping on the upper side a per new position of S/D contacts
+node_model(name="SourceDoping", device=device, region="bulk", equation="0.25*%(source_doping)1.15e*erfc(-(x-%(x_channel_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)" % mydict)
+   
+# node_model(
+#     name="SourceDoping",
+#     device=device,
+#     region="bulk",
+#     equation="0.25*%(source_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
+#     % mydict,
+# )
+
+# Body doping on the back gate side
+node_model(name="BodyDoping",   device=device, region="bulk", equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)" % mydict)
+
+# node_model(
+#     name="BodyDoping",
+#     device=device,
+#     region="bulk",
+#     equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)"
+#     % mydict,
+# )
+
 node_model(
     name="Donors",
     device=device,
