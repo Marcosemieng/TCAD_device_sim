@@ -97,7 +97,7 @@ Gate_voltages = [0.1, 0.7, 1] # Three different Gate voltages
 for voltage in Gate_voltages:
     set_parameter(device=device, name=GetContactBiasName('gate'), value=voltage) # set gate bias (MM)
     set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
-    set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
+    # set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
     rampbias(device, "drain", 1, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 # Loop Gate - Perform IV (Id@Vgs)
@@ -105,7 +105,7 @@ Drain_voltages = [0.1, 1] # Two different Drain voltages
 for voltage in Drain_voltages:
     set_parameter(device=device, name=GetContactBiasName('drain'), value=voltage) # set drain bias (MM)
     set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
-    set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
+    # set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
     rampbias(device, "gate", -1.5, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
     rampbias(device, "gate", 1.5, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
