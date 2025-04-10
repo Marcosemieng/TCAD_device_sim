@@ -1,5 +1,6 @@
-//// Mesh MOSFET BG 2D : v15
+//// Mesh MOSFET BG 2D : v16
 //// 1) Optimised structure Back Gate MOSFET; 2) no S/D doping junctions
+//// 3) Channel thickness = 50 nm;
 
 
 
@@ -7,7 +8,7 @@ contact_width =    500e-7; // 500nm
 channel_length =   500e-7;
 device_width =     2*contact_width + channel_length;
 gate_width =       device_width;
-device_thickness =     200e-7;
+device_thickness =     50e-7;
 
 cd = device_thickness;
 
@@ -99,6 +100,7 @@ Line Loop(18) = {15, -11, 14, 4};
 Plane Surface(19) = {18};
 
 
+
 Field[1] = Attractor;
 Field[1].EdgesList = {4};
 
@@ -111,7 +113,7 @@ Field[2].DistMax = 3 * cd;
 
 
 Field[3] = Attractor;
-Field[3].EdgesList = {1,16,17};
+Field[3].EdgesList = {1,16,17}; // {1,16,17};
 
 Field[4] = Threshold;
 Field[4].IField = 3;
@@ -123,14 +125,13 @@ Field[4].DistMax = 3 * cd;
 
 Field[14] = Attractor;
 Field[14].EdgesList = {16};
-// Field[14].EdgesList = {4};
 
 Field[15] = Threshold;
-Field[15].IField = 14;
+Field[15].IField = 14; // 14;
 Field[15].LcMin = cd/50;
-Field[15].LcMax = cd;
-Field[15].DistMin = cd/20;
-Field[15].DistMax = cd/10;
+Field[15].LcMax = cd/6;
+Field[15].DistMin = cd/50;
+Field[15].DistMax = cd/0.4;
 
 
 //Field[3] = Attractor;

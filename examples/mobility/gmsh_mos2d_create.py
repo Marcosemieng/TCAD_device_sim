@@ -19,7 +19,7 @@ contact_width    = 500e-7
 channel_length   = 500e-7 # MM: decoupling back gate from channel length
 device_width     = 2*contact_width + channel_length
 gate_width       = device_width #
-device_thickness = 200e-7
+device_thickness = 50e-7
 
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
