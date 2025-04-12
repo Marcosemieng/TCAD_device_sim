@@ -16,18 +16,17 @@ from devsim import (
 device = "mos2d"
 
 contact_width    = 500e-7
-channel_length   = 500e-7 # MM: decoupling back gate from channel length
+channel_length   = 300e-7 # MM: decoupling back gate from channel length
 device_width     = 2*contact_width + channel_length
 gate_width       = device_width #
-device_thickness = 50e-7
+device_thickness = 10e-7
 
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
-oxide_thickness = 5e-7 # 1e-5 = 100nm (MM)
-gate_thickness = 1e-5 #100nm (MM)
+oxide_thickness = 20e-7 # 1e-5 = 100nm (MM)
+gate_thickness = 20e-7 #100nm (MM)
 
-device_thickness = 7e-5 #1um (MM)
 diffusion_thickness = 1e-6 #100nm (MM)
 
 x_diffusion_decay = 1e-20
