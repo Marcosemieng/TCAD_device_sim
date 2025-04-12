@@ -19,8 +19,8 @@ eps_0 = 8.85e-14  # F/cm^2
 eps_si = 11.1
 eps_ox = 3.9 # 25 HfO
 #----------------------
-d = 10 * 1e-7  # cm
-N_A = 1.0e18  # #/cm^3; body doping
+d = 20 * 1e-7  # cm
+N_A = 1.0e12  # #/cm^3; body doping
 N_D = 1.0e20  # #/cm^3, S/D doping
 n_i = 1e10  # #/cm^3
 
@@ -39,6 +39,11 @@ Wm = np.sqrt((2 * εs * 2 * Fb) / (q * N_A))  # Max depletion width
 Wj = np.sqrt(((2 * εs * Vbi)/q) * (1/N_A + 1/N_D))  # pn junction width   * np.log((1/N_A) + (1/N_D))
 # MOSFET: threshold voltage
 Vth = (np.sqrt(2 * εs * q * N_A * (2 * Fb)) / (Co)) + (2 * Fb)  # threshold voltage
+Vth_ass = -0.6 # assumed thresold voltage
+# MOSFET BG: carrier concentraion
+Vgs = 10
+n2D = Co*(Vgs-Vth)/q 
+n2D_ass = Co*(Vgs-Vth_ass)/q # carrier concantration based on a virtual Vgs
 
 
 # Print calculated parameters
@@ -48,6 +53,8 @@ print("Vbi = ", Vbi)
 print("Wm = ", Wm) # cm
 print("Wj = ", Wj) # cm
 print("Vth = ", Vth)
+print(f"n2D = {n2D:.2e}") # cm^-2
+print(f"n2D_ass = {n2D_ass:.2e}") # cm^-2
 
-mosfet_ion = mosfet_char.mosfet_ion_char('/Users/macbookpro/Desktop/id_vds.csv')
-print("Ion = ", mosfet_ion)
+# mosfet_ion = mosfet_char.mosfet_ion_char('/Users/macbookpro/Desktop/id_vds.csv')
+# print("Ion = ", mosfet_ion)
