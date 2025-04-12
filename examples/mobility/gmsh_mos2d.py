@@ -93,12 +93,12 @@ for r in silicon_regions:
     element_from_edge_model(edge_model="HoleCurrent", device=device, region=r)
 
 # Loop Drain - Perform IV (Id@Vds)
-Gate_voltages = [0.1, 0.7, 1] # Three different Gate voltages
-for voltage in Gate_voltages:
-    set_parameter(device=device, name=GetContactBiasName('gate'), value=voltage) # set gate bias (MM)
-    set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
-    # set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
-    rampbias(device, "drain", 1, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
+# Gate_voltages = [0.1, 0.7, 1] # Three different Gate voltages 
+# for voltage in Gate_voltages:
+#     set_parameter(device=device, name=GetContactBiasName('gate'), value=voltage) # set gate bias (MM)
+#     set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
+#     # set_parameter(device=device, name=GetContactBiasName('bulk'), value=0) # set bulk bias (MM)
+#     rampbias(device, "drain", 1, 0.1, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 # Loop Gate - Perform IV (Id@Vgs)
 Drain_voltages = [0.1, 1] # Two different Drain voltages
