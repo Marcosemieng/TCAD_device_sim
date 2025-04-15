@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from tkinter import Tk, filedialog
 # import scienceplots  # Ensure this is installed if you're using the 'science' style
 
 # Use the 'science' style for the plot
@@ -101,6 +102,137 @@ def print_IVgs_ext():
     return plot
 
 
+# Plot multiple I@Vds from an external selectable file (at a fixed Vgs = 1V)
+# TO-DO: move this function into "4_mosfet_TLM_plot.py"
+def print_IVds_multiple_ext(Vgs_select=1):
+    """
+    Allows the user to select one or multiple .csv files via a pop-up window
+    and plots the Ids vs Vds curves from the selected files on the same graph.
+    """
+    # Step 1: Open a file selection dialog to select one or multiple .csv files
+    Tk().withdraw()  # Hide the root Tkinter window
+    file_paths = filedialog.askopenfilenames(
+        title="Select one or multiple CSV files",
+        filetypes=[("CSV Files", "*.csv")]
+    )
+
+    if not file_paths:
+        print("No files selected.")
+        return
+
+    # Step 2: Initialize the plot
+    plt.figure(figsize=(8, 6))  # Set the figure size
+
+    # Step 3: Loop through each selected file and plot the data
+    for file_path in file_paths:
+        try:
+            # Load the CSV file into a DataFrame
+            df = pd.read_csv(file_path)
+            print(f"CSV file '{file_path}' loaded successfully.")
+
+            # Filter the data for 'Id@V_drain_bias'
+            df_drain_bias = df[df['Title'] == 'Id@V_drain_bias']
+
+            # Plot the data for only a Vgs value
+
+            df_vgs = df_drain_bias[df_drain_bias['Vgs'] == Vgs_select]
+            plt.plot(
+                df_vgs['Vds'], df_vgs['Ids'], marker='o',
+                label=f"{file_path.split('/')[-1]}: Vgs = {Vgs_select}"
+            )
+
+            # Plot the data for each unique Vgs value
+            # for vgs_value in df_drain_bias['Vgs'].unique():
+            #     df_vgs = df_drain_bias[df_drain_bias['Vgs'] == vgs_value]
+            #     plt.plot(
+            #         df_vgs['Vds'], df_vgs['Ids'], marker='o',
+            #         label=f"{file_path.split('/')[-1]}: Vgs = {vgs_value}"
+            #     )
+
+        except FileNotFoundError:
+            print(f"Error: CSV file '{file_path}' not found.")
+        except Exception as e:
+            print(f"An error occurred while processing '{file_path}': {e}")
+
+    # Step 4: Customize the plot
+    plt.xlabel('Vds (Drain Voltage) [V]')  # X-axis label
+    plt.ylabel('Ids (Drain Current) [A/cm]')  # Y-axis label
+    plt.title('Ids vs Vds for Lch')  # Plot title
+    plt.legend()  # Add a legend
+    plt.grid(True)  # Add a grid
+    plt.tight_layout()  # Adjust layout to avoid clipping
+
+    # Step 5: Show the plot
+    plt.show()
+
+
+# Plot multiple I@Vgs from an external selectable file (at a fixed Vds = 1V)
+# TO-DO: move this function into "4_mosfet_TLM_plot.py"
+def print_IVgs_multiple_ext(Vds_select=0.1):
+    """
+    Allows the user to select one or multiple .csv files via a pop-up window
+    and plots the Ids vs Vds curves from the selected files on the same graph.
+    """
+    # Step 1: Open a file selection dialog to select one or multiple .csv files
+    Tk().withdraw()  # Hide the root Tkinter window
+    file_paths = filedialog.askopenfilenames(
+        title="Select one or multiple CSV files",
+        filetypes=[("CSV Files", "*.csv")]
+    )
+
+    if not file_paths:
+        print("No files selected.")
+        return
+
+    # Step 2: Initialize the plot
+    plt.figure(figsize=(8, 6))  # Set the figure size
+
+    # Step 3: Loop through each selected file and plot the data
+    for file_path in file_paths:
+        try:
+            # Load the CSV file into a DataFrame
+            df = pd.read_csv(file_path)
+            print(f"CSV file '{file_path}' loaded successfully.")
+
+            # Filter the data for 'Id@V_gate_bias'
+            df_gate_bias = df[df['Title'] == 'Id@V_gate_bias']
+
+            # Plot the data for only a Vgs value
+
+            df_vds = df_gate_bias[df_gate_bias['Vds'] == Vds_select]
+            plt.plot(
+                df_vds['Vgs'], df_vds['Ids'], marker='o',
+                label=f"{file_path.split('/')[-1]}: Vds = {Vds_select}"
+            )
+
+            # Plot the data for each unique Vgs value
+            # for vgs_value in df_drain_bias['Vgs'].unique():
+            #     df_vgs = df_drain_bias[df_drain_bias['Vgs'] == vgs_value]
+            #     plt.plot(
+            #         df_vgs['Vds'], df_vgs['Ids'], marker='o',
+            #         label=f"{file_path.split('/')[-1]}: Vgs = {vgs_value}"
+            #     )
+
+        except FileNotFoundError:
+            print(f"Error: CSV file '{file_path}' not found.")
+        except Exception as e:
+            print(f"An error occurred while processing '{file_path}': {e}")
+
+    # Step 4: Customize the plot
+    plt.xlabel('Vgs (Gate Voltage) [V]')  # X-axis label
+    plt.ylabel('Ids (Drain Current) [A/cm]')  # Y-axis label
+    plt.yscale('log')  # Set the y-axis to logarithmic scale
+    plt.title('Ids vs Vgs for Lch')  # Plot title
+    plt.legend()  # Add a legend
+    plt.grid(True)  # Add a grid
+    plt.tight_layout()  # Adjust layout to avoid clipping
+
+    # Step 5: Show the plot
+    plt.show()
+
+
 # Test
 print_IVgs = print_IVgs()
 print_IVds = print_IVds()
+# print_IVgs_multiple_ext()
+# print_IVds_multiple_ext()
