@@ -16,7 +16,7 @@ from devsim import (
 device = "mos2d"
 
 contact_width    = 500e-7
-channel_length   = 300e-7 # MM: decoupling back gate from channel length
+channel_length   = 200e-7 # MM: decoupling back gate from channel length
 device_width     = 2*contact_width + channel_length
 gate_width       = device_width #
 device_thickness = 10e-7
@@ -33,7 +33,7 @@ x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
 
 # p doping
-bulk_doping = 0 # 1e18 # 1e15 (MM)
+bulk_doping = 1e18 #  MoS2 ND=1e18 to 5e18 (MM)
 body_doping = bulk_doping #1e15 # 1e19 (MM)
 # n doping
 drain_doping = 0 # 1e20
@@ -106,9 +106,8 @@ add_gmsh_contact(
 # add_gmsh_contact(
 #     mesh="mos2d", gmsh_name="body_contact", region="bulk", name="body", material="metal"
 # )
-add_gmsh_contact(
-    mesh="mos2d", gmsh_name="gate_contact", region="gate", name="gate", material="metal"
-)
+add_gmsh_contact(mesh="mos2d", gmsh_name="gate_contact", region="gate", name="gate", material="metal")
+
 add_gmsh_interface(
     mesh="mos2d",
     gmsh_name="gate_oxide_interface",
@@ -143,6 +142,7 @@ mydict["y_bulk_bottom"] = y_bulk_bottom
 mydict["y_bulk_top"] = y_bulk_top
 mydict["y_diffusion_decay"] = y_diffusion_decay
 
+# Gate doping
 node_model(
     name="Donors",
     device=device,
@@ -150,9 +150,7 @@ node_model(
     equation="%(gate_doping)1.15e + 1" % (mydict),
 )
 node_model(name="Acceptors", device=device, region="gate", equation="1")
-node_model(
-    name="NetDoping", device=device, region="gate", equation="Donors - Acceptors"
-)
+node_model(name="NetDoping", device=device, region="gate", equation="Donors - Acceptors")
 
 # S/D doping on the upper side a per new position of S/D contacts
 node_model(name="DrainDoping",  device=device, region="bulk", equation="0.25*%(drain_doping)1.15e*erfc((x-%(x_channel_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)" % mydict)
@@ -187,18 +185,36 @@ node_model(name="BodyDoping",   device=device, region="bulk", equation="0.5*%(bo
 #     % mydict,
 # )
 
-node_model(
-    name="Donors",
-    device=device,
-    region="bulk",
-    equation="DrainDoping + SourceDoping + 1",
-)
+# Doping S/D with acceptors = 0 (inverted to emulate MoS2)
 node_model(
     name="Acceptors",
     device=device,
     region="bulk",
+    equation="DrainDoping + SourceDoping + 1",
+)
+
+# node_model(
+#     name="Donors",
+#     device=device,
+#     region="bulk",
+#     equation="DrainDoping + SourceDoping + 1",
+# )
+
+# Doping bulk by using Donor (to emulate MoS2 n-behaviour)
+node_model(
+    name="Donors",
+    device=device,
+    region="bulk",
     equation="%(bulk_doping)1.15e + BodyDoping" % mydict,
 )
+
+# node_model(
+#     name="Acceptors",
+#     device=device,
+#     region="bulk",
+#     equation="%(bulk_doping)1.15e + BodyDoping" % mydict,
+# )
+
 node_model(
     name="NetDoping", device=device, region="bulk", equation="Donors - Acceptors"
 )
