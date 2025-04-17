@@ -411,21 +411,22 @@ def SS(file_path):
 # uFE = (Lch * gm) / (Wch * Cins * Vds); Cins = gate insulator capacitance; Vds = ?; Wch = ?.
 def mobility_fe(file_path, Lch=None, Wch=None, Cins=None):
     # calculate gm_peak
-    gm_peak, _, _, _ = mosfet_Vth_char(file_path)
+    gm_peak, _, _, _ = Vth_ELR(file_path)
 
     # TO-DO: these numbers below should be given externally rigorously
     eps_0 = 8.85e-14  # F/cm^2
     eps_ox = 3.9 # 25 HfO
     εox = eps_ox * eps_0
-    d = 10 * 1e-7  # cm
+    d = 20 * 1e-7  # cm
     Cins = εox / d
-    Lch = 45e-7  # cm
-    Wch = 1e-7  # cm (for now just approximated as in reality the width is virtually 0)
+    Lch = 400 * 1e-7  # cm
+    Wch = 1  # cm (is normalised by 1)
     Vds_bias = 1  # Vds=1V bias
 
     # Calculate the field effect mobility
     # TO-DO: Check if the units are consistent
     uFE = (Lch * gm_peak) / (Wch * Cins * Vds_bias)
+    print("uFE is:", uFE)
 
     return uFE
 
@@ -599,6 +600,7 @@ def compute(a=None):
     _, ss_value = SS(input_file_path)
     dibl_value = DIBL(input_file_path)
     n2D, Rtot = r_tot(input_file_path)
+    # uFE = mobility_fe(input_file_path)
 
     # Step 3: Store parameters in CSV file
     try:
