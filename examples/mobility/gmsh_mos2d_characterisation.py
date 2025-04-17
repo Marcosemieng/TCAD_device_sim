@@ -117,9 +117,9 @@ def imax(file_path):
     return current_at_1
 
 
-# Function to extract Imin (Vg=-1.5) from Id@Vg at Vds=Vdd=1V
+# Function to extract Imin (Vg=-3V) from Id@Vg at Vds=Vdd=0.1V
 def imin(file_path):
-    Vds_bias = 1  # Vds=1V bias value to filter the data: data must be extracted at this Vds=Vdd=1V
+    Vds_bias = 0.1  # Vds=1V bias value to filter the data: data must be extracted at this Vds=Vdd=1V; Updated to take it at Vds=0.1V
     voltages = []
     currents = []
 
@@ -143,8 +143,8 @@ def imin(file_path):
     voltages = np.array(voltages)
     currents = np.array(currents)
 
-    # Use NumPy's interpolation to extrapolate current at Vgs = 0 and Vgs = 1
-    current_at_min_Vg = np.interp(-1.5, voltages, currents)
+    # Use NumPy's interpolation to extrapolate minimum current at Vgs=-3V and Vds=0.1V from the Id@Vgs
+    current_at_min_Vg = np.interp(-3, voltages, currents)
     return current_at_min_Vg
 
 
