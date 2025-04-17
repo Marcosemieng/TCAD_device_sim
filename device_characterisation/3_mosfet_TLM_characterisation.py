@@ -122,11 +122,18 @@ def rc_tlm(file_path = None):
                 except ValueError:
                     print("Error: Invalid data in 'Lch' or 'Rtot' columns.")
                     return None
+                
+        # Step 2: Prompt the user for a scaling factor for the y-axis
+        try:
+            scaling_factor = float(input("Enter the scaling factor for the y-axis (Ids): "))
+        except ValueError:
+            print("Invalid scaling factor. Using default value of 1.")
+            scaling_factor = 1.0        
 
         # Convert lists to NumPy arrays
         lch_values = np.array(lch_values)
         # lch_values_cm = np.array(lch_values_cm)
-        rtot_values = np.array(rtot_values)
+        rtot_values = np.array(rtot_values) * scaling_factor  # Apply the scaling factor to Rtot
 
         # Step 2: Perform linear regression to find Rc (intercept at Lch=0)
         slope, intercept, r_value, p_value, std_err = linregress(lch_values, rtot_values)
@@ -147,14 +154,19 @@ def rc_tlm(file_path = None):
         # Step 5: Plot the data and the regression line
         plt.figure(figsize=(8, 6))
         plt.scatter(lch_values, rtot_values, label="Data Points", color="blue")
-        plt.plot(lch_values, slope * lch_values + intercept, label=f"Fit: Rtot = {slope:.2f}*Lch + {intercept:.2f} (Ω*cm)", color="red")
-        plt.axhline(y=Rc_tot, color="green", linestyle="--", label=f"Rc (Intercept) = {Rc_tot:.2f} (Ω*cm)")
+        # TO-DO: make this automatic every time scaling factor is = 1
+        plt.plot(lch_values, slope * lch_values + intercept, label=f"Fit: Rtot = {slope:.2f}*Lch + {intercept:.2f} (Ω*cm)", color="red")#  (no scaling factor)
+        # plt.plot(lch_values, slope * lch_values + intercept, label=f"Fit: Rtot = {slope:.2f}*Lch + {intercept:.2f} (kΩ*um)", color="red") # (scaled factor by 1e1 = 10)
+        plt.axhline(y=Rc_tot, color="green", linestyle="--", label=f"Rc (Intercept) = {Rc_tot:.2f} (Ω*cm)") # (no scaling factor)
+        # plt.axhline(y=Rc_tot, color="green", linestyle="--", label=f"Rc (Intercept) = {Rc_tot:.2f} (kΩ*um)") # scaled factor by 1e1 = 10
         plt.xlim(left=0)
         plt.xlabel("Lch (nm)")
-        plt.ylabel("Rtot (Ω*cm)")
+        # TO-DO: make this automatic every time scaling factor is = 1
+        plt.ylabel("Rtot (Ω*cm)") # no scaling factor
+        # plt.ylabel("Rtot (kΩ*um)") # scaled factor by 1e1 = 10
         plt.title("Linear Fit to Extract Rc")
         plt.legend()
-        plt.grid(True)
+        plt.grid(False)
         plt.show()
 
         return Rc_tot, Rc
