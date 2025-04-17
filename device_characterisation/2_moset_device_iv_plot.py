@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 from tkinter import Tk, filedialog
 # import scienceplots  # Ensure this is installed if you're using the 'science' style
 
@@ -108,6 +109,7 @@ def print_IVds_multiple_ext(Vgs_select=1):
     """
     Allows the user to select one or multiple .csv files via a pop-up window
     and plots the Ids vs Vds curves from the selected files on the same graph.
+    The y-axis values (Ids) can be scaled by a desired factor.
     """
     # Step 1: Open a file selection dialog to select one or multiple .csv files
     Tk().withdraw()  # Hide the root Tkinter window
@@ -120,10 +122,17 @@ def print_IVds_multiple_ext(Vgs_select=1):
         print("No files selected.")
         return
 
-    # Step 2: Initialize the plot
+    # Step 2: Prompt the user for a scaling factor for the y-axis
+    try:
+        scaling_factor = float(input("Enter the scaling factor for the y-axis (Ids): "))
+    except ValueError:
+        print("Invalid scaling factor. Using default value of 1.")
+        scaling_factor = 1.0
+
+    # Step 3: Initialize the plot
     plt.figure(figsize=(8, 6))  # Set the figure size
 
-    # Step 3: Loop through each selected file and plot the data
+    # Step 4: Loop through each selected file and plot the data
     for file_path in file_paths:
         try:
             # Load the CSV file into a DataFrame
@@ -133,42 +142,43 @@ def print_IVds_multiple_ext(Vgs_select=1):
             # Filter the data for 'Id@V_drain_bias'
             df_drain_bias = df[df['Title'] == 'Id@V_drain_bias']
 
-            # Plot the data for only a Vgs value
-
+            # Plot the data for only the selected Vgs value
             df_vgs = df_drain_bias[df_drain_bias['Vgs'] == Vgs_select]
             plt.plot(
-                df_vgs['Vds'], df_vgs['Ids'], marker='o',
+                df_vgs['Vds'], df_vgs['Ids'] * scaling_factor, marker='o',
                 label=f"{file_path.split('/')[-1]}: Vgs = {Vgs_select}"
             )
-
-            # Plot the data for each unique Vgs value
-            # for vgs_value in df_drain_bias['Vgs'].unique():
-            #     df_vgs = df_drain_bias[df_drain_bias['Vgs'] == vgs_value]
-            #     plt.plot(
-            #         df_vgs['Vds'], df_vgs['Ids'], marker='o',
-            #         label=f"{file_path.split('/')[-1]}: Vgs = {vgs_value}"
-            #     )
 
         except FileNotFoundError:
             print(f"Error: CSV file '{file_path}' not found.")
         except Exception as e:
             print(f"An error occurred while processing '{file_path}': {e}")
 
-    # Step 4: Customize the plot
-    plt.xlabel('Vds (Drain Voltage) [V]')  # X-axis label
-    plt.ylabel('Ids (Drain Current) [A/cm]')  # Y-axis label
-    plt.title('Ids vs Vds for Lch')  # Plot title
+    # Step 5: Customize the plot
+    plt.xlabel('Vds [V]')  # X-axis label
+    # TO-DO: make this automatic every time scaling factor is = 1
+    plt.ylabel(f'Ids [A/cm]')  # Y-axis label (as is: A/cm)
+    # plt.ylabel(f'Ids [uA/um]')  # Y-axis label (scaled by 1e-2)
+    plt.title('Ids@Vds vs. Lch')  # Plot title
     plt.legend()  # Add a legend
-    plt.grid(True)  # Add a grid
+    # plt.grid(True)  # Add a grid
     plt.tight_layout()  # Adjust layout to avoid clipping
 
-    # Step 5: Show the plot
+    # Step 6: Set the y-axis to scientific notation
+    ax = plt.gca()  # Get the current axis
+    ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    ax.yaxis.get_major_formatter().set_scientific(True)
+    ax.yaxis.get_major_formatter().set_powerlimits((-1, 1))  # Adjust the range for scientific notation
+
+    plt.tight_layout()  # Adjust layout to avoid clipping
+
+    # Step 7: Show the plot
     plt.show()
 
 
 # Plot multiple I@Vgs from an external selectable file (at a fixed Vds = 1V)
 # TO-DO: move this function into "4_mosfet_TLM_plot.py"
-def print_IVgs_multiple_ext(Vds_select=0.1):
+def print_IVgs_multiple_ext(Vds_select=1):
     """
     Allows the user to select one or multiple .csv files via a pop-up window
     and plots the Ids vs Vds curves from the selected files on the same graph.
@@ -183,11 +193,18 @@ def print_IVgs_multiple_ext(Vds_select=0.1):
     if not file_paths:
         print("No files selected.")
         return
+    
+    # Step 2: Prompt the user for a scaling factor for the y-axis
+    try:
+        scaling_factor = float(input("Enter the scaling factor for the y-axis (Ids): "))
+    except ValueError:
+        print("Invalid scaling factor. Using default value of 1.")
+        scaling_factor = 1.0
 
-    # Step 2: Initialize the plot
+    # Step 3: Initialize the plot
     plt.figure(figsize=(8, 6))  # Set the figure size
 
-    # Step 3: Loop through each selected file and plot the data
+    # Step 4: Loop through each selected file and plot the data
     for file_path in file_paths:
         try:
             # Load the CSV file into a DataFrame
@@ -201,7 +218,7 @@ def print_IVgs_multiple_ext(Vds_select=0.1):
 
             df_vds = df_gate_bias[df_gate_bias['Vds'] == Vds_select]
             plt.plot(
-                df_vds['Vgs'], df_vds['Ids'], marker='o',
+                df_vds['Vgs'], df_vds['Ids'] * scaling_factor, marker='o',
                 label=f"{file_path.split('/')[-1]}: Vds = {Vds_select}"
             )
 
@@ -218,21 +235,29 @@ def print_IVgs_multiple_ext(Vds_select=0.1):
         except Exception as e:
             print(f"An error occurred while processing '{file_path}': {e}")
 
-    # Step 4: Customize the plot
-    plt.xlabel('Vgs (Gate Voltage) [V]')  # X-axis label
-    plt.ylabel('Ids (Drain Current) [A/cm]')  # Y-axis label
+    # Step 5: Customize the plot
+    plt.xlabel('Vgs [V]')  # X-axis label
+    # TO-DO: make this automatic every time scaling factor is = 1
+    plt.ylabel('Ids [A/cm]')  # Y-axis label (no scaling factor = 1)
+    # plt.ylabel(f'Ids [uA/um]')  # Y-axis label (scaled by 1e2 = 100)
     plt.yscale('log')  # Set the y-axis to logarithmic scale
-    plt.title('Ids vs Vgs for Lch')  # Plot title
+    plt.title('Ids#Vgs vs. Lch')  # Plot title
     plt.legend()  # Add a legend
-    plt.grid(True)  # Add a grid
+    plt.grid(False)  # Add a grid
     plt.tight_layout()  # Adjust layout to avoid clipping
 
-    # Step 5: Show the plot
+    # Step 6: Set the y-axis to scientific notation
+    # ax = plt.gca()  # Get the current axis
+    # ax.yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    # ax.yaxis.get_major_formatter().set_scientific(True)
+    # ax.yaxis.get_major_formatter().set_powerlimits((-1, 1))  # Adjust the range for scientific notation
+
+    # Step 7: Show the plot
     plt.show()
 
 
 # Test
-print_IVgs = print_IVgs()
-print_IVds = print_IVds()
-# print_IVgs_multiple_ext()
+# print_IVgs = print_IVgs()
+# print_IVds = print_IVds()
+print_IVgs_multiple_ext()
 # print_IVds_multiple_ext()
