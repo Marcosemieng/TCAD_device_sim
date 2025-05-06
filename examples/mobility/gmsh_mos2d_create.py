@@ -15,8 +15,8 @@ from devsim import (
 
 device = "mos2d"
 
-device_width = 60e-6 #1um (MM)
-gate_width = 45e-7 #100nm (MM)
+device_width = 60e-6 #600nm (MM)
+gate_width = 45e-7 #45nm (MM)
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
