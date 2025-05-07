@@ -16,7 +16,7 @@ from devsim import (
 device = "mos2d"
 
 device_width = 60e-6 #600nm (MM)
-gate_width = 45e-7 #45nm (MM)
+gate_width = 45e-7 #90nm (MM)
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
@@ -29,8 +29,8 @@ x_diffusion_decay = 1e-20
 y_diffusion_decay = 1e-10
 
 # p doping
-bulk_doping = 1e18 # 1e15 (MM)
-body_doping = 1e15 # 1e19 (MM)
+bulk_doping = 1e17 # 1e-- (MM)
+body_doping = 1e15 # 1e-- (MM)
 # n doping
 drain_doping = 1e20
 source_doping = 1e20
