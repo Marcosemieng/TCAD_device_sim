@@ -93,7 +93,7 @@ for r in silicon_regions:
     element_from_edge_model(edge_model="HoleCurrent", device=device, region=r)
 
 # Loop Drain - Perform IV (Id@Vds)
-Gate_voltages = [0.1, 0.7, 1] # Three different Gate voltages
+Gate_voltages = [0.1, 0.7, 1]  # Three different Gate voltages
 for voltage in Gate_voltages:
     set_parameter(device=device, name=GetContactBiasName('gate'), value=voltage) # set gate bias (MM)
     set_parameter(device=device, name=GetContactBiasName('source'), value=0) # set source bias (MM)
@@ -110,7 +110,7 @@ for voltage in Drain_voltages:
     rampbias(device, "gate", 1.5, 0.2, 0.001, 100, 1e-10, 1e30, printAllCurrents)
 
 # Characterisation of the MOSFET (MM)
-Characterisation = mosfet_char.compute() # Compute and save in a '.csv' file
+# Characterisation = mosfet_char.compute() # Compute and save in a '.csv' file
 
 
 ####
