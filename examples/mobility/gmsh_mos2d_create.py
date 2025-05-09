@@ -16,7 +16,7 @@ from devsim import (
 device = "mos2d"
 
 device_width = 60e-6 #600nm (MM)
-gate_width = 45e-7 #90nm (MM)
+gate_width = 90e-7 #90nm (MM)
 diffusion_width = 0.4 #4mm (MM) // this parameter might be unused
 
 air_thickness = 1e-7
@@ -26,11 +26,11 @@ device_thickness = 7e-5 #1um (MM)
 diffusion_thickness = 1e-6 #100nm (MM)
 
 x_diffusion_decay = 1e-20
-y_diffusion_decay = 1e-10
+y_diffusion_decay = 1e-10 # 1e-10 
 
 # p doping
-bulk_doping = 1e17 # 1e-- (MM)
-body_doping = 1e15 # 1e-- (MM)
+bulk_doping = 1e15 # 1e15 (MM: this is the entire Si doping except S/D and the back gate contact)
+body_doping = 1e17 # 1e17 (MM: this is the body contact doping) TO-DO: restore this to 1e-15
 # n doping
 drain_doping = 1e20
 source_doping = 1e20
@@ -58,15 +58,15 @@ x_device_left = x_bulk_left - air_thickness
 x_device_right = x_bulk_right + air_thickness
 
 y_bulk_top = 0.0
-y_oxide_top = y_bulk_top - oxide_thickness
+y_oxide_top = y_bulk_top + oxide_thickness
 y_oxide_mid = 0.5 * (y_oxide_top + y_bulk_top)
-y_gate_top = y_oxide_top - gate_thickness
+y_gate_top = y_oxide_top + gate_thickness
 y_gate_mid = 0.5 * (y_gate_top + y_oxide_top)
-y_device_top = y_gate_top - air_thickness
-y_bulk_bottom = y_bulk_top + device_thickness
+y_device_top = y_gate_top + air_thickness
+y_bulk_bottom = y_bulk_top - device_thickness
 y_bulk_mid = 0.5 * (y_bulk_top + y_bulk_bottom)
-y_device_bottom = y_bulk_bottom + air_thickness
-y_diffusion = y_bulk_top + diffusion_thickness
+y_device_bottom = y_bulk_bottom - air_thickness
+y_diffusion = y_bulk_top - diffusion_thickness
 
 import os
 # Look for your absolute directory path
@@ -128,6 +128,7 @@ mydict["x_gate_left"] = x_gate_left
 mydict["x_gate_right"] = x_gate_right
 mydict["x_diffusion_decay"] = x_diffusion_decay
 mydict["y_diffusion"] = y_diffusion
+mydict["y_bulk_top"] = y_bulk_top
 mydict["y_bulk_bottom"] = y_bulk_bottom
 mydict["y_diffusion_decay"] = y_diffusion_decay
 
@@ -142,26 +143,30 @@ node_model(
     name="NetDoping", device=device, region="gate", equation="Donors - Acceptors"
 )
 
+# Drain is top right corner
 node_model(
     name="DrainDoping",
     device=device,
     region="bulk",
-    equation="0.25*%(drain_doping)1.15e*erfc((x-%(x_gate_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
+    # equation="0.25*%(drain_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
+    equation="0.25*%(drain_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
 )
+
+# Source is top left corner
 node_model(
     name="SourceDoping",
     device=device,
     region="bulk",
-    equation="0.25*%(source_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc((y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
+    equation="0.25*%(source_doping)1.15e*erfc((x-%(x_gate_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
 )
+
+# TO-DO: modify equation
 node_model(
     name="BodyDoping",
     device=device,
     region="bulk",
-    equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)"
-    % mydict,
+    # equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
+    equation="0.5*%(body_doping)1.15e*erfc(-(y-%(y_bulk_bottom)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
 )
 node_model(
     name="Donors",
