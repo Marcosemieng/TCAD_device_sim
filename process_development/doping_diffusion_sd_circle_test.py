@@ -28,9 +28,15 @@ def calculate_theta_end(center_y, radius, lateral_struggle):
     return theta_end
 
 # Input parameters
-contact_length = 2  # Length of the contact
-junction_depth = -0.5  # Junction depth
+contact_length = 30  # S/D contact Length (X1)
+junction_depth = -5  # Junction depth
+
+gate_legth = 50  # Length of the gate
+overlap_length = 0.1 * gate_legth  # S/D to gate overlap length (X2)
+
 lateral_struggle = 10  # Lateral struggle (it should be 0.8, but it is for a Gaussian, not for a circle)
+
+### ---------- ###
 
 # Adjust the circle's center_y
 radius = 1  # Radius of the circle; abs(junction_depth)
@@ -48,16 +54,18 @@ theta = np.linspace(-np.pi / 2, theta_end, 500)  # Angle values from 270° to th
 circle_x = center_x + radius * np.cos(theta)  # X-coordinates of the circle
 circle_y = center_y + (lateral_struggle * radius) * np.sin(theta)  # Y-coordinates of the circle
 
+### ---------- ###
+
 # Generate points for the horizontal line
 line_x = np.linspace(0, contact_length, 500)  # X-coordinates from 0 to contact_length
 line_y = np.full_like(line_x, junction_depth)  # Y-coordinates are constant (same as the starting y of the circle)
 
 # Plot the circle segment
 plt.figure(figsize=(8, 6))
-plt.plot(circle_x, circle_y, label="Circle Segment (270° to theta_end)")
+plt.plot(circle_x, circle_y) # plt.plot(circle_x, circle_y, label="Circle Segment (270° to theta_end)")
 
 # Plot the horizontal line
-plt.plot(line_x, line_y, label="Horizontal Line (x=0 to x=2)")
+plt.plot(line_x, line_y) # plt.plot(line_x, line_y, label="Horizontal Line (x=0 to x=2)")
 
 # Customize the plot
 plt.gca().set_aspect('equal', adjustable='box')  # Ensure the aspect ratio is equal
