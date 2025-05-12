@@ -20,12 +20,6 @@ theta_end = round(np.arccos((overlap_length) / radius_x), 2)
 lateral_struggle = round(abs(junction_depth) / (radius_x * (1 - np.sin(theta_end))), 2)
 center_y = junction_depth + (radius_x * lateral_struggle)
 
-# Print values
-print("test_cos is:", test_cos)
-print("theta_end is:", theta_end)
-print("lateral_struggle is:", lateral_struggle)
-print("center_y is:", center_y)
-
 
 # Generate points for the circle (from 270° to theta_end)
 theta = np.linspace(-np.pi / 2, -theta_end, 500)  # Angle values from 270° to theta_end to stop at y=0
