@@ -3,20 +3,20 @@ import matplotlib.pyplot as plt
 
 
 # Define S/D geometry parameters
-gate_length = 2  # Length of the gate
-contact_length = 2
-junction_depth = -1  # Junction depth
-overlap_length = 0.7*gate_length  # S/D to gate overlap length (X2)
+gate_length = 45  # Length of the gate
+contact_length = 20
+junction_depth = -10  # Junction depth
+overlap_length = 0.1*gate_length  # S/D to gate overlap length (X2)
 
 # Define geometry parameters
 center_x = contact_length
-radius_x = abs(junction_depth) #or =1 ?
+radius_x = abs(junction_depth)
 
 # Calculate parameters for the circle
-test_cos = ((overlap_length - center_x) / radius_x)
+test_cos = ((overlap_length - center_x) / radius_x) # 
 
 # TO-DO: understand whats the relationship with the phase 
-theta_end = round(np.arccos((overlap_length - center_x) / radius_x), 2) # MM: +/- (1)*np.pi 
+theta_end = round(np.arccos((overlap_length) / radius_x), 2)
 lateral_struggle = round(abs(junction_depth) / (radius_x * (1 - np.sin(theta_end))), 2)
 center_y = junction_depth + (radius_x * lateral_struggle)
 
@@ -28,7 +28,7 @@ print("center_y is:", center_y)
 
 
 # Generate points for the circle (from 270° to theta_end)
-theta = np.linspace(-np.pi / 2, theta_end, 500)  # Angle values from 270° to theta_end to stop at y=0
+theta = np.linspace(-np.pi / 2, -theta_end, 500)  # Angle values from 270° to theta_end to stop at y=0
 circle_x = center_x + radius_x * np.cos(theta)  # X-coordinates of the circle
 circle_y = center_y + (lateral_struggle * radius_x) * np.sin(theta)  # Y-coordinates of the circle
 
