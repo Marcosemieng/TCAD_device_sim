@@ -84,8 +84,9 @@ def doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, dopin
     center_y = junction_depth + radius_y
 
     # Define the x and y ranges (in meters)
-    x = np.linspace(-1.3 * contact_length, 1.3 * contact_length, 500)  # x-axis range
-    y = np.linspace(1.3 * contact_length, -1.3 * contact_length, 500)  # y-axis range
+    computation_length = 1.3 * (contact_length + overlap_length)
+    x = np.linspace(-computation_length, computation_length, 500)  # x-axis range
+    y = np.linspace(computation_length, -computation_length, 500)  # y-axis range
 
     # Create a 2D grid of x and y values
     X, Y = np.meshgrid(x, y)
@@ -164,9 +165,9 @@ def plot_doping_profile(X, Y, doping_profile_sd):
 
 
 # Define S/D contact parameters
-gate_length = 45  # Length of the gate
-contact_length = 20
-junction_depth = -10  # Junction depth
+gate_length = 45  # Length of the gate; MM: default = 45
+contact_length = 20  # Length of the contact; MM: default = 20
+junction_depth = -10  # Junction depth; MM: default = -10
 overlap_length = 0.1 * gate_length  # S/D to gate overlap length
 
 # Define doping constants
@@ -174,12 +175,10 @@ diffusion_decay = 0.5  # Diffusion decay constant along the y axis
 doping_concentration_max = 1e20  # Peak doping concentration
 
 # Plot
-x = np.linspace(-1.3 * contact_length, 1.3 * contact_length, 500)  # x-axis range
-y = np.linspace(1.3 * contact_length, -1.3 * contact_length, 500)  # y-axis range
+computation_length = 1.3 * (contact_length + overlap_length)
+x = np.linspace(- computation_length, computation_length, 500)  # x-axis range
+y = np.linspace(computation_length, - computation_length, 500)  # y-axis range
 X, Y = np.meshgrid(x, y)
-
-# doping_profile_sd_erfc = doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, doping_concentration_max, diffusion_decay)
-# plot_doping_profile(X, Y, doping_profile_sd_erfc)
 
 doping_profile_sd_erfc_y = doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, doping_concentration_max, diffusion_decay)
 plot_doping_profile(X, Y, doping_profile_sd_erfc_y)
