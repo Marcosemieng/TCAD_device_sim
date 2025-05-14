@@ -1,50 +1,174 @@
+# Import Libraries
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import erfc
+from scipy.optimize import curve_fit
 
-# Define constants (values from the provided code)
-drain_doping = 1e20
-x_gate_right = 30e-7 # cm
-# x_diffusion_decay = 8.48*1e-8 # T=1000C; t=1hr; (TBD)
-x_diffusion_decay = 8.48*1e-8 # T=1000C; t=1hr; (TBD)
-y_diffusion = 800*1e-7
-# y_diffusion_decay = 8.48*1e-6 # cm T=1000C; t=1hr; (From Sze example pg. 473)
-y_diffusion_decay = 10*1e-8 # cm
+# Lateral struggle decay factor calculations
+# TO-DO: remove the X & Y from the function and either remove it completetly or make it automatic
+def adjust_decay_factor(X, Y, center_x, radius_x, center_y, radius_y, rectangular_doping, doping_concentration, contact_length, diffusion_decay, initial_decay):
+    """
+    Adjusts the decay factor for the circular doping profile to match the vertical profile
+    of rectangular_doping at x=contact_length with the vertical profile of doping_concentration
+    at the next x-point after x=contact_length, only for y ≤ 0.
 
-# Define the x and y ranges (in meters)
-x = np.linspace(2.5e-6, 3.5e-6, 500)  # x-axis range around x_gate_right
-y = np.linspace(0.5e-5, 100e-6, 500)  # y-axis range around y_diffusion
+    Parameters:
+        X (ndarray): 2D grid of x values.
+        Y (ndarray): 2D grid of y values.
+        rectangular_doping (ndarray): Rectangular doping profile.
+        doping_concentration (ndarray): Circular doping profile.
+        contact_length (float): The x-coordinate of the contact length.
+        diffusion_decay (float): Diffusion decay constant.
+        initial_decay (float): Initial value of decay_adj_circle.
 
-# Create a 2D grid of x and y values
+    Returns:
+        float: Adjusted decay factor.
+    """
+    # Find the index for x = contact_length and the next x-point
+    x_index_contact = np.argmin(np.abs(X[0, :] - contact_length))  # Index for x = contact_length
+    x_index_next = x_index_contact + 1  # Index for the next x-point after contact_length
+
+    # Restrict to y ≤ 0
+    y_mask = Y[:, 0] <= 0  # Mask for y ≤ 0
+    y_values = Y[y_mask, 0]  # Extract y values for y ≤ 0
+
+    # Extract vertical profiles for y ≤ 0
+    vertical_profile_rectangular = rectangular_doping[y_mask, x_index_contact]
+    vertical_profile_circular = doping_concentration[y_mask, x_index_next]
+
+    # Define the model function for the circular doping profile
+    def circular_doping_model(y, decay_adj_circle):
+        # Use the index-based approach for distance calculation
+        distance_from_center = np.sqrt(
+            ((X[y_mask, x_index_next] - center_x) / radius_x) ** 2
+            + ((y - center_y) / radius_y) ** 2
+        )
+        return doping_concentration_max * erfc((distance_from_center - 1) / (decay_adj_circle * diffusion_decay))
+
+    # Perform curve fitting to optimize decay_adj_circle
+    popt, _ = curve_fit(
+        circular_doping_model,  # Model function
+        y_values,              # y-axis values
+        vertical_profile_rectangular,  # Target profile (rectangular doping)
+        p0=[initial_decay],    # Initial guess for decay_adj_circle
+        bounds=(0, np.inf)     # Ensure decay_adj_circle is positive
+    )
+
+    # Extract the optimized decay factor
+    decay_adj_circle = popt[0]
+    return decay_adj_circle
+
+# Doping profile for S/D using the complementary error function (erfc)
+def doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, diffusion_decay):
+    """
+    Calculates the doping concentration for a rectangular and circular doping profile,
+    adjusting the decay factor for the circular profile to ensure continuity.
+
+    Parameters:
+        contact_length (float): The x-coordinate of the contact length.
+        junction_depth (float): The depth of the junction (y-coordinate).
+        overlap_length (float): The overlap length for the doping profile.
+        diffusion_decay (float): The diffusion decay constant.
+
+    Returns:
+        ndarray: The combined doping concentration profile.
+    """
+    # Define constants
+    doping_concentration_max = 1e20  # Maximum doping concentration
+    center_x = contact_length
+    radius_x = abs(junction_depth)
+
+    # Calculate parameters for the ellipse
+    theta_end = round(np.arccos((overlap_length) / radius_x), 2)
+    lateral_struggle = round(abs(junction_depth) / (radius_x * (1 - np.sin(theta_end))), 2)
+    radius_y = radius_x * lateral_struggle
+    center_y = junction_depth + radius_y
+
+    # Define the x and y ranges (in meters)
+    x = np.linspace(0, 25, 500)  # x-axis range
+    y = np.linspace(0, -25, 500)  # y-axis range
+
+    # Create a 2D grid of x and y values
+    X, Y = np.meshgrid(x, y)
+
+    # Calculate the normalized distance from the center of the ellipse
+    distance_from_center = np.sqrt(((X - center_x) / radius_x) ** 2 + ((Y - center_y) / radius_y) ** 2)
+
+    # Calculate the angle (in radians) for each point in the grid
+    angles = np.arctan2(Y - center_y, X - center_x)  # Angle in radians (-π to π)
+
+    # Restrict the angles to the range 270° to 360° (or -π/2 to 0 in radians)
+    mask = (angles >= -np.pi / 2) & (angles <= theta_end - np.pi / 2)
+
+    # Doping profile for the rectangular grid
+    rectangular_doping_mask = (X >= 0) & (X <= contact_length)
+    rectangular_doping = (
+        doping_concentration_max
+        * erfc(-(Y - junction_depth) / (diffusion_decay))
+        * rectangular_doping_mask
+    )
+
+    # Doping profile for the circle grid
+    doping_concentration = np.zeros_like(distance_from_center)  # Initialize with zeros
+    decay_adj_circle = 0.011  # Initial decay factor for the circular doping profile
+    doping_concentration[mask] = doping_concentration_max * erfc(
+        (distance_from_center[mask] - 1) / (decay_adj_circle * diffusion_decay)
+    )
+
+    # Adjust the decay factor
+    decay_adj_circle = adjust_decay_factor(X, Y, center_x, radius_x, center_y, radius_y, rectangular_doping, doping_concentration, contact_length, diffusion_decay, decay_adj_circle)
+
+    # Update doping concentration with the adjusted decay factor
+    doping_concentration[mask] = doping_concentration_max * erfc(
+        (distance_from_center[mask] - 1) / (decay_adj_circle * diffusion_decay)
+    )
+
+    # Add the rectangular doping contribution
+    doping_concentration += rectangular_doping
+
+    return doping_concentration
+
+# This is a placholder function for the Gaussian doping profile
+def doping_profile_sd_gaussian():
+    return None
+
+# Plot doping profile
+def plot_doping_profile(X, Y, doping_profile_sd):
+    """
+    Plots the doping concentration profile.
+
+    Parameters:
+        X (ndarray): 2D grid of x values.
+        Y (ndarray): 2D grid of y values.
+        doping_profile_sd_erfc (ndarray): Doping concentration profile to be plotted.
+    """
+    plt.figure(figsize=(8, 6))
+    contour = plt.contourf(X, Y, doping_profile_sd, levels=50, cmap="viridis")
+    plt.colorbar(label="Doping Concentration (cm⁻³)")
+    plt.title("Elliptical Doping Profile with Adjusted Decay Factor (y ≤ 0)")
+    plt.xlabel("x (m)")
+    plt.ylabel("y (m)")
+    plt.gca().set_aspect('equal', adjustable='box')  # Ensure the aspect ratio is equal
+    plt.grid(False)
+    plt.show()
+
+
+### ------ Test portion ------ ###
+
+
+# Define S/D contact parameters
+gate_length = 45  # Length of the gate
+contact_length = 20
+junction_depth = -10  # Junction depth
+overlap_length = 0.1 * gate_length  # S/D to gate overlap length
+
+# Define doping constants
+diffusion_decay = 0.9  # Diffusion decay constant along the y axis
+doping_concentration_max = 1e20  # Peak doping concentration
+
+# Plot
+x = np.linspace(0, 25, 500)  # x-axis range
+y = np.linspace(0, -25, 500)  # y-axis range
 X, Y = np.meshgrid(x, y)
-
-# Calculate the doping concentration using the formula
-doping_concentration = (
-    drain_doping
-    # * erfc((X - x_gate_right) / (2 * x_diffusion_decay))
-    * erfc((X - x_gate_right) / (0.8 * x_diffusion_decay))
-    * erfc(-(Y - y_diffusion) / (50*y_diffusion_decay))
-)
-
-# Plot the doping concentration
-plt.figure(figsize=(8, 6))
-contour = plt.contourf(X, Y, doping_concentration, levels=50, cmap="viridis")
-# contour = plt.contourf(Y, doping_concentration, levels=50, cmap="viridis")
-# plt.plot(y, doping_concentration)
-plt.axis([2.5e-6, 3.5e-6, 0, 100e-6])
-
-
-# plt.title("1D Drain Doping Concentration Profile")
-# plt.xlabel("y (cm)")
-# plt.ylabel("Doping Concentration (cm⁻³)")
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
-
-plt.colorbar(label="Doping Concentration (cm⁻³)")
-plt.title("Drain Doping Concentration Profile")
-plt.xlabel("x (m)")
-plt.ylabel("y (m)")
-plt.grid(False)
-plt.show()
+# doping_profile_sd_erfc = doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, diffusion_decay)
+# plot_doping_profile(X, Y, doping_profile_sd_erfc)
