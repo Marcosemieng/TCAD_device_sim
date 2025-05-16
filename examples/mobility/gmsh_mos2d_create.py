@@ -13,6 +13,8 @@ from devsim import (
     write_devices,
 )
 
+import gmsh_mos2d_doping as doping #(MM)
+
 device = "mos2d"
 
 device_width = 60e-6 #600nm (MM)
@@ -143,21 +145,23 @@ node_model(
     name="NetDoping", device=device, region="gate", equation="Donors - Acceptors"
 )
 
-# Drain is top right corner
+# Drain is top right corner - import equation
 node_model(
     name="DrainDoping",
     device=device,
     region="bulk",
-    # equation="0.25*%(drain_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
-    equation="0.25*%(drain_doping)1.15e*erfc(-(x-%(x_gate_right)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
+    equation=doping.drain_doping_profile_original(mydict),
 )
 
-# Source is top left corner
+# Source is top left corner - import equation
+# TO-DO: move this internally to the function
+overlap_length = 0.1 * gate_width 
 node_model(
     name="SourceDoping",
     device=device,
     region="bulk",
-    equation="0.25*%(source_doping)1.15e*erfc((x-%(x_gate_left)1.15e)/%(x_diffusion_decay)1.15e)*erfc(-(y-%(y_diffusion)1.15e)/%(y_diffusion_decay)1.15e)"% mydict,
+    # equation=doping.source_doping_profile_original(mydict),
+    equation=doping.source_doping_profile_erfc(x_gate_left, diffusion_thickness, overlap_length, source_doping, y_diffusion_decay),
 )
 
 # TO-DO: modify equation
