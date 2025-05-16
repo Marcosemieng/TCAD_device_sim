@@ -136,7 +136,7 @@ def doping_profile_sd_erfc(contact_length, junction_depth, overlap_length, dopin
 
     return doping_concentration
 
-# This is a placholder function for the Gaussian doping profile
+# TO-DO: This is a placholder function for the Gaussian doping profile
 def doping_profile_sd_gaussian():
     return None
 
@@ -164,15 +164,15 @@ def plot_doping_profile(X, Y, doping_profile_sd):
 ### ------ Test portion ------ ###
 
 
-# Define S/D contact parameters
+# Define S/D contact geometry parameters
 gate_length = 45  # Length of the gate; MM: default = 45
 contact_length = 20  # Length of the contact; MM: default = 20
 junction_depth = -10  # Junction depth; MM: default = -10
 overlap_length = 0.1 * gate_length  # S/D to gate overlap length
 
-# Define doping constants
-diffusion_decay = 0.5  # Diffusion decay constant along the y axis
+# Define S/D doping parameters
 doping_concentration_max = 1e20  # Peak doping concentration
+diffusion_decay = 0.5  # Diffusion decay constant along the y axis
 
 # Plot
 computation_length = 1.3 * (contact_length + overlap_length)
