@@ -532,6 +532,7 @@ def r_tot(file_path,Vds=0.1,Vgs=1):
     Vgs_max = v_th + (q*n2D_max)/(Co)
 
     # Calculate actual carrier concentration
+    # TO-DO: This might be meaningless for 3D mosfets, but for now is kept as a placeholder
     n2D = Co*(Vgs-v_th)/q
 
     # Calculate Rtot

@@ -88,19 +88,96 @@ def print_IVgs():
 
 
 # Plot I@Vds from an external selectable file
-# This is a placeholder function
 def print_IVds_ext():
-    plot = None
+    """
+    Allows the user to select a .csv file via a pop-up window
+    and plots the Ids vs Vds curves for all unique Vgs values found in the file.
+    """
+    # Open a file selection dialog to select a .csv file
+    Tk().withdraw()  # Hide the root Tkinter window
+    file_path = filedialog.askopenfilename(
+        title="Select a CSV file",
+        filetypes=[("CSV Files", "*.csv")]
+    )
 
-    return plot
+    if not file_path:
+        print("No file selected.")
+        return
+
+    try:
+        df = pd.read_csv(file_path)
+        print(f"CSV file '{file_path}' loaded successfully.")
+    except FileNotFoundError:
+        print(f"Error: CSV file '{file_path}' not found.")
+        return
+
+    # Filter the data for 'Id@V_drain_bias'
+    df_drain_bias = df[df['Title'] == 'Id@V_drain_bias']
+
+    # Get all unique Vgs values
+    unique_vgs = sorted(df_drain_bias['Vgs'].unique())
+
+    plt.figure(figsize=(8, 6))
+
+    # Plot for each unique Vgs value
+    for vgs in unique_vgs:
+        df_vgs = df_drain_bias[df_drain_bias['Vgs'] == vgs]
+        plt.plot(df_vgs['Vds'], df_vgs['Ids'], marker='o', label=f'Vgs = {vgs}')
+
+    plt.xlabel('Vds (Drain Voltage) [V]')
+    plt.ylabel('Ids (Drain Current) [A]')
+    plt.title('Ids vs Vds for Different Vgs (External File)')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
 # Plot I@Vgs from an external selectable file
-# This is a placeholder function
 def print_IVgs_ext():
-    plot = None
+    """
+    Allows the user to select a .csv file via a pop-up window
+    and plots the Ids vs Vgs curves for all unique Vgs values found in the file.
+    """
+    # Open a file selection dialog to select a .csv file
+    Tk().withdraw()  # Hide the root Tkinter window
+    file_path = filedialog.askopenfilename(
+        title="Select a CSV file",
+        filetypes=[("CSV Files", "*.csv")]
+    )
 
-    return plot
+    if not file_path:
+        print("No file selected.")
+        return
+
+    try:
+        df = pd.read_csv(file_path)
+        print(f"CSV file '{file_path}' loaded successfully.")
+    except FileNotFoundError:
+        print(f"Error: CSV file '{file_path}' not found.")
+        return
+
+    # Filter the data for 'Id@V_gate_bias'
+    df_gate_bias = df[df['Title'] == 'Id@V_gate_bias']
+
+    # Get all unique Vds values
+    unique_vds = sorted(df_gate_bias['Vds'].unique())
+
+    plt.figure(figsize=(8, 6))
+
+    # Plot for each unique Vds value
+    for vds in unique_vds:
+        df_vds = df_gate_bias[df_gate_bias['Vds'] == vds]
+        plt.plot(df_vds['Vgs'], df_vds['Ids'], marker='o', label=f'Vds = {vds}')
+
+    plt.xlabel('Vgs (Gate Voltage) [V]')
+    plt.ylabel('Ids (Drain Current) [A]')
+    plt.yscale('log')  # Set the y-axis to logarithmic scale
+    plt.title('Ids vs Vgs for Different Vds (External File)')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
 # Plot multiple I@Vds from an external selectable file (at a fixed Vgs = 1V)
@@ -258,6 +335,8 @@ def print_IVgs_multiple_ext(Vds_select=1):
 
 # Test
 # print_IVgs = print_IVgs()
-# print_IVds = print_IVds()
-print_IVgs_multiple_ext()
+# sprint_IVds = print_IVds()
+print_IVgs_ext = print_IVgs_ext()
+# print_IVds_ext = print_IVds_ext()
+# print_IVgs_multiple_ext()
 # print_IVds_multiple_ext()
